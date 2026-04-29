@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Classic Cuts | POS System</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f0f2f5;
+      font-family: 'Inter', sans-serif;
+      color: #1e1e2f;
+      overflow-x: hidden;
+    }
+
+    .dashboard-wrapper {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      background: #1a1a2c;
+      color: #eef2ff;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid #2d2d44;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-header h2 {
+      color: #f9b17a;
+      font-size: 1.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar-header p {
+      font-size: 0.7rem;
+      color: #b9b9d6;
+      margin-top: 8px;
+    }
+
+    .nav-menu {
+      flex: 1;
+      padding: 0 16px;
+    }
+
+    .nav-item {
+      margin-bottom: 8px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: #cdd1ff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-link i {
+      width: 24px;
+      font-size: 1.1rem;
+      color: #9aa0c0;
+    }
+
+    .nav-link:hover {
+      background: #25253a;
+      color: #f9b17a;
+    }
+
+    .nav-link:hover i {
+      color: #f9b17a;
+    }
+
+    .nav-link.active {
+      background: #f9b17a;
+      color: #1a1a2c;
+    }
+
+    .nav-link.active i {
+      color: #1a1a2c;
+    }
+
+    .nav-divider {
+      height: 1px;
+      background: #2d2d44;
+      margin: 16px 0;
+    }
+
+    .user-profile-section {
+      padding: 20px 16px;
+      border-top: 1px solid #2d2d44;
+      margin-top: auto;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 8px;
+      border-radius: 12px;
+      background: #25253a;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      background: #f9b17a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #1a1a2c;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .user-details {
+      flex: 1;
+    }
+
+    .user-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #ffffff;
+    }
+
+    .user-role {
+      font-size: 0.7rem;
+      color: #b9b9d6;
+    }
+
+    .logout-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(185, 28, 28, 0.2);
+      border: 1px solid rgba(185, 28, 28, 0.3);
+      color: #ff8a8a;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .logout-btn:hover {
+      background: #b91c1c;
+      color: white;
+      border-color: #b91c1c;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .top-header {
+      background: white;
+      border-radius: 20px;
+      padding: 16px 24px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .page-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e2a3a;
+    }
+
+    .page-title p {
+      font-size: 0.8rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .date-badge {
+      background: #f0f2f5;
+      padding: 10px 18px;
+      border-radius: 32px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #1e2a3a;
+    }
+
+    /* POS Container */
+    .pos-wrapper {
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+
+    .pos-header {
+      background: #1a1a2c;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .pos-logo h2 {
+      color: #f9b17a;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .pos-logo p {
+      color: #b9b9d6;
+      font-size: 0.7rem;
+    }
+
+    .shop-info {
+      background: #25253a;
+      padding: 6px 16px;
+      border-radius: 48px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .shop-info span {
+      color: #eef2ff;
+      font-size: 0.8rem;
+    }
+
+    .shop-info i {
+      color: #f9b17a;
+      margin-right: 6px;
+    }
+
+    .pos-main {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .products-section {
+      flex: 2;
+      min-width: 260px;
+      background: #fefefe;
+      padding: 24px 20px;
+      border-right: 1px solid #e9eef3;
+    }
+
+    .cart-section {
+      flex: 1.2;
+      min-width: 320px;
+      background: #fafcff;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .category-tabs {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 12px;
+    }
+
+    .cat-btn {
+      background: transparent;
+      border: none;
+      padding: 8px 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #3c4b5e;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .cat-btn i {
+      margin-right: 8px;
+    }
+
+    .cat-btn.active {
+      background: #1e2a3a;
+      color: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .cat-btn:not(.active):hover {
+      background: #eef2ff;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 18px;
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 24px;
+      padding: 14px 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      transition: all 0.2s ease;
+      border: 1px solid #edf2f7;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      border-color: #f9b17a;
+      box-shadow: 0 14px 22px -10px rgba(0,0,0,0.08);
+    }
+
+    .product-icon {
+      font-size: 2rem;
+      color: #f78c3f;
+      margin-bottom: 8px;
+    }
+
+    .product-title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    .product-price {
+      font-weight: 700;
+      color: #2c7a4d;
+      font-size: 1rem;
+    }
+
+    /* Customer Section */
+    .customer-section {
+      background: linear-gradient(135deg, #f8f9fc 0%, #f1f5f9 100%);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .customer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .section-title {
+      font-weight: 700;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .customer-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      background: white;
+      padding: 4px;
+      border-radius: 48px;
+    }
+
+    .customer-tab {
+      flex: 1;
+      padding: 8px 16px;
+      background: transparent;
+      border: none;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border-radius: 40px;
+      text-align: center;
+    }
+
+    .customer-tab.active {
+      background: #1e2a3a;
+      color: white;
+    }
+
+    .walkin-card, .selected-customer-card {
+      background: white;
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid #e9ecef;
+    }
+
+    .walkin-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .walkin-avatar {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #f9b17a 0%, #f78c3f 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .change-customer-btn {
+      background: white;
+      border: 1px solid #f9b17a;
+      color: #f9b17a;
+      padding: 8px 14px;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .customer-search-input-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .customer-search-input-group input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 40px;
+    }
+
+    .customer-list {
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .customer-item {
+      padding: 12px;
+      background: white;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      border: 1px solid #e2e8f0;
+    }
+
+    .register-form-group {
+      margin-bottom: 14px;
+    }
+
+    .register-form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+    }
+
+    .register-submit-btn, .checkout-btn {
+      background: #1e2a3a;
+      border: none;
+      width: 100%;
+      padding: 12px;
+      font-weight: 700;
+      border-radius: 60px;
+      color: white;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    .barber-section, .payment-section {
+      background: #f1f5f9;
+      border-radius: 20px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .barber-buttons, .payment-methods {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .barber-btn, .pay-method-btn {
+      flex: 1;
+      background: white;
+      border: 1px solid #ccd7e6;
+      border-radius: 40px;
+      padding: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .barber-btn.active, .pay-method-btn.active {
+      background: #1e2a3a;
+      color: white;
+    }
+
+    .cart-items {
+      max-height: 280px;
+      overflow-y: auto;
+      margin-bottom: 16px;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      background: white;
+      padding: 10px;
+      border-radius: 16px;
+      margin-bottom: 8px;
+    }
+
+    .grand-total {
+      font-size: 1.2rem;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      margin: 12px 0;
+    }
+
+    .cash-input-group input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 24px;
+      border: 1px solid #cbd5e1;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); display: none; }
+      .main-content { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="dashboard-wrapper">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2><i class="fas fa-cut"></i> Classic Cuts</h2>
+      <p>Barber Shop Management</p>
+    </div>
+    <div class="nav-menu">
+      <div class="nav-item"><a class="nav-link active"><i class="fas fa-cash-register"></i> POS System</a></div>
+      <div class="nav-divider"></div>
+      <div class="nav-item"><a class="nav-link"><i class="fas fa-box"></i> Products</a></div>
+      <div class="nav-item"><a class="nav-link"><i class="fas fa-users"></i> Customers</a></div>
+      <div class="nav-item"><a class="nav-link"><i class="fas fa-user-check"></i> Barbers</a></div>
+    </div>
+    <div class="user-profile-section">
+      <div class="user-info">
+        <div class="user-avatar">JD</div>
+        <div class="user-details"><div class="user-name">James Dela Cruz</div><div class="user-role">Cashier</div></div>
+      </div>
+      <button class="logout-btn" id="staticLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="top-header">
+      <div class="page-title"><h1>Point of Sale System</h1><p>Classic Cuts · Fast & Professional</p></div>
+      <div class="date-badge" id="liveDate"><i class="far fa-calendar-alt"></i> Loading...</div>
+    </div>
+
+    <div class="pos-wrapper">
+      <div class="pos-header">
+        <div class="pos-logo"><h2><i class="fas fa-cut"></i> Classic Cuts POS</h2><p>Premium Grooming • Clean Cuts • Hot Towel Shave</p></div>
+        <div class="shop-info"><span><i class="fas fa-map-marker-alt"></i> 123 Main St, Downtown</span><span><i class="fas fa-phone-alt"></i> (555) 123-4567</span></div>
+      </div>
+
+      <div class="pos-main">
+        <div class="products-section">
+          <div class="category-tabs" id="categoryTabs"></div>
+          <div id="productsGrid" class="products-grid"></div>
+        </div>
+
+        <div class="cart-section">
+          <div class="cart-header"><h3><i class="fas fa-receipt"></i> Ticket</h3><button id="clearCartBtn" class="clear-cart"><i class="fas fa-trash-alt"></i> Clear</button></div>
+          <div class="customer-section" id="customerSection"></div>
+          <div id="cartItemsList" class="cart-items"></div>
+          <div class="barber-section"><div class="section-title"><i class="fas fa-user-check"></i> Select Barber</div><div id="barberButtonsContainer" class="barber-buttons"></div></div>
+          <div class="cart-totals"><div class="grand-total"><span>TOTAL DUE</span><span id="grandTotal">₱0.00</span></div></div>
+          <div class="payment-section"><div class="section-title"><i class="fas fa-credit-card"></i> Payment Method</div><div id="paymentMethodsContainer" class="payment-methods"></div><div id="paymentDetailsArea"></div></div>
+          <button id="checkoutBtn" class="checkout-btn"><i class="fas fa-receipt"></i> COMPLETE SALE</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // ==================== STATIC DATA ====================
+  const categories = [
+    { slug: "barber", name: "Barber Services", icon: "fas fa-cut" },
+    { slug: "grooming", name: "Grooming", icon: "fas fa-shower" },
+    { slug: "products", name: "Products", icon: "fas fa-shopping-bag" }
+  ];
+  
+  const productsData = {
+    barber: [
+      { id: 101, name: "Classic Haircut", price: 250, icon: "fas fa-cut" },
+      { id: 102, name: "Hot Towel Shave", price: 180, icon: "fas fa-hot-tub" },
+      { id: 103, name: "Kids Cut", price: 150, icon: "fas fa-child" },
+      { id: 104, name: "Beard Trim", price: 120, icon: "fas fa-beard" }
+    ],
+    grooming: [
+      { id: 201, name: "Hair Treatment", price: 350, icon: "fas fa-spa" },
+      { id: 202, name: "Facial Mask", price: 280, icon: "fas fa-smile" },
+      { id: 203, name: "Scalp Massage", price: 200, icon: "fas fa-hand-peace" }
+    ],
+    products: [
+      { id: 301, name: "Pomade (60g)", price: 190, icon: "fas fa-flask" },
+      { id: 302, name: "Beard Oil", price: 220, icon: "fas fa-oil-can" },
+      { id: 303, name: "Shampoo", price: 150, icon: "fas fa-bottle-water" }
+    ]
+  };
+  
+  const barbersList = [
+    { id: 1, name: "Mike", icon: "fas fa-user" },
+    { id: 2, name: "Ethan", icon: "fas fa-user" },
+    { id: 3, name: "Carlos", icon: "fas fa-user" }
+  ];
+  
+  const staticCustomers = [
+    { id: 1, name: "Walk-in Customer", phone: "", visits: 0, total_spent: 0 },
+    { id: 2, name: "John Santos", phone: "09171234567", visits: 5, total_spent: 1250 },
+    { id: 3, name: "Maria Reyes", phone: "09221234567", visits: 12, total_spent: 3240 },
+    { id: 4, name: "Leo Martinez", phone: "09991234567", visits: 3, total_spent: 680 }
+  ];
+  
+  // Global state
+  let activeCategory = "barber";
+  let cart = [];
+  let selectedPaymentMethod = "cash";
+  let cashTendered = 0;
+  let referenceNumber = "";
+  let selectedBarber = null;
+  let selectedCustomer = { id: 1, name: "Walk-in Customer" };
+  let customerActiveTab = "walkin";
+  let customerSearchQuery = "";
+  
+  const formatPHP = (val) => `₱${val.toFixed(2)}`;
+  const escapeHtml = (str) => str ? str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}) : '';
+  
+  function renderCategoryTabs() {
+    const container = document.getElementById("categoryTabs");
+    container.innerHTML = categories.map(cat => `<button class="cat-btn ${cat.slug === activeCategory ? 'active' : ''}" data-cat="${cat.slug}"><i class="${cat.icon}"></i> ${cat.name}</button>`).join("");
+    document.querySelectorAll(".cat-btn").forEach(btn => btn.addEventListener("click", (e) => {
+      activeCategory = btn.dataset.cat;
+      renderCategoryTabs();
+      renderProducts();
+    }));
+  }
+  
+  function renderProducts() {
+    const grid = document.getElementById("productsGrid");
+    let prods = productsData[activeCategory] || [];
+    if(!prods.length) { grid.innerHTML = "<div class='empty-cart-msg'>No products</div>"; return; }
+    grid.innerHTML = prods.map(prod => `<div class="product-card" data-id="${prod.id}"><div class="product-icon"><i class="${prod.icon}"></i></div><div class="product-title">${escapeHtml(prod.name)}</div><div class="product-price">${formatPHP(prod.price)}</div></div>`).join("");
+    document.querySelectorAll(".product-card").forEach(card => card.addEventListener("click", (e) => {
+      const id = parseInt(card.dataset.id);
+      const product = prods.find(p => p.id === id);
+      if(product) addToCart(product);
+    }));
+  }
+  
+  function addToCart(product) {
+    let existing = cart.find(i => i.id === product.id);
+    if(existing) existing.quantity++;
+    else cart.push({ ...product, quantity: 1 });
+    updateCartUI();
+  }
+  
+  function updateCartUI() {
+    const container = document.getElementById("cartItemsList");
+    const total = cart.reduce((s,i)=> s + (i.price*i.quantity),0);
+    if(cart.length===0) container.innerHTML = "<div class='empty-cart-msg'>✂️ No services yet.</div>";
+    else container.innerHTML = cart.map(item => `<div class="cart-item"><div><strong>${escapeHtml(item.name)}</strong> x${item.quantity}<br><small>${formatPHP(item.price)} ea</small></div><div>${formatPHP(item.price*item.quantity)} <button class="remove-item" data-id="${item.id}" style="background:none; border:none; color:#b91c1c;"><i class="fas fa-times-circle"></i></button></div></div>`).join("");
+    document.getElementById("grandTotal").innerText = formatPHP(total);
+    document.querySelectorAll(".remove-item").forEach(btn => btn.addEventListener("click", (e) => {
+      const id = parseInt(btn.dataset.id);
+      const idx = cart.findIndex(i=> i.id === id);
+      if(idx !== -1) { if(cart[idx].quantity>1) cart[idx].quantity--; else cart.splice(idx,1); updateCartUI(); renderPaymentDetails(); }
+    }));
+    renderPaymentDetails();
+  }
+  
+  function renderBarberButtons() {
+    const container = document.getElementById("barberButtonsContainer");
+    container.innerHTML = barbersList.map(barber => `<button class="barber-btn" data-id="${barber.id}"><i class="${barber.icon}"></i> ${barber.name}</button>`).join("");
+    document.querySelectorAll(".barber-btn").forEach(btn => btn.addEventListener("click", () => {
+      document.querySelectorAll(".barber-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedBarber = barbersList.find(b=> b.id === parseInt(btn.dataset.id));
+    }));
+  }
+  
+  function renderPaymentMethods() {
+    const container = document.getElementById("paymentMethodsContainer");
+    container.innerHTML = `<button class="pay-method-btn active" data-method="cash"><i class="fas fa-money-bill-wave"></i> Cash</button>
+                           <button class="pay-method-btn" data-method="gcash"><i class="fas fa-mobile-alt"></i> GCash</button>
+                           <button class="pay-method-btn" data-method="card"><i class="fas fa-credit-card"></i> Card</button>`;
+    document.querySelectorAll(".pay-method-btn").forEach(btn => btn.addEventListener("click", () => {
+      document.querySelectorAll(".pay-method-btn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      selectedPaymentMethod = btn.dataset.method;
+      cashTendered = 0; referenceNumber = "";
+      renderPaymentDetails();
+    }));
+  }
+  
+  function renderPaymentDetails() {
+    const area = document.getElementById("paymentDetailsArea");
+    const total = cart.reduce((s,i)=> s + (i.price*i.quantity),0);
+    if(selectedPaymentMethod === "cash") {
+      area.innerHTML = `<div class="cash-input-group"><label>Cash Tendered (₱)</label><input type="number" id="cashAmount" class="cash-amount" min="0" step="0.01" value=""><div id="changeDisplay" class="change-display" style="margin-top:8px;">Change: ₱0.00</div></div>`;
+      const cashInput = document.getElementById("cashAmount");
+      if(cashInput) cashInput.addEventListener("input", (e) => {
+        let val = parseFloat(e.target.value);
+        cashTendered = isNaN(val) ? 0 : val;
+        const change = Math.max(0, cashTendered - total);
+        document.getElementById("changeDisplay").innerHTML = `Change: ${formatPHP(change)}`;
+      });
+    } else if(selectedPaymentMethod === "gcash") {
+      area.innerHTML = `<div class="reference-note"><i class="fas fa-qrcode"></i> GCash Number: 0912 345 6789<br><input type="text" id="gcashRef" placeholder="Reference #" style="margin-top:6px; width:100%; padding:8px; border-radius:40px; border:1px solid #ccc;"></div>`;
+      document.getElementById("gcashRef")?.addEventListener("input", (e) => referenceNumber = e.target.value);
+    } else if(selectedPaymentMethod === "card") {
+      area.innerHTML = `<div><input type="text" id="cardRef" placeholder="Last 4 digits / Auth Code" style="width:100%; padding:8px; border-radius:40px;"></div>`;
+      document.getElementById("cardRef")?.addEventListener("input", (e) => referenceNumber = e.target.value);
+    }
+  }
+  
+  // Customer UI
+  function renderCustomerSection() {
+    const section = document.getElementById("customerSection");
+    if(customerActiveTab === "walkin") {
+      section.innerHTML = `<div class="walkin-card"><div class="walkin-info"><div class="walkin-avatar"><i class="fas fa-walking"></i></div><div><strong>${escapeHtml(selectedCustomer.name)}</strong><br><small>Default Walk-in</small></div><button class="change-customer-btn" id="switchExistingBtn">Change</button></div></div>`;
+      document.getElementById("switchExistingBtn")?.addEventListener("click", () => { customerActiveTab = "existing"; renderCustomerSection(); });
+    } else if(customerActiveTab === "existing") {
+      section.innerHTML = `<div class="customer-tabs"><button class="customer-tab" id="tabWalkin">Walk-in</button><button class="customer-tab active">Existing</button><button class="customer-tab" id="tabRegister">New</button></div>
+        <div class="customer-search-input-group"><input type="text" id="searchCustomerInput" placeholder="Search name or phone..." value="${escapeHtml(customerSearchQuery)}"><button id="searchCustomerBtn">Search</button></div>
+        <div id="customerList" class="customer-list"></div>`;
+      document.getElementById("tabWalkin")?.addEventListener("click", () => { customerActiveTab = "walkin"; selectedCustomer = { id:1, name:"Walk-in Customer" }; renderCustomerSection(); });
+      document.getElementById("tabRegister")?.addEventListener("click", () => { customerActiveTab = "register"; renderCustomerSection(); });
+      document.getElementById("searchCustomerBtn")?.addEventListener("click", () => { customerSearchQuery = document.getElementById("searchCustomerInput")?.value || ""; renderCustomerSection(); });
+      renderCustomerList();
+    } else if(customerActiveTab === "register") {
+      section.innerHTML = `<div class="customer-tabs"><button class="customer-tab" id="regTabWalkin">Walk-in</button><button class="customer-tab" id="regTabExisting">Existing</button><button class="customer-tab active">New</button></div>
+        <div class="register-form-group"><label>Full Name</label><input type="text" id="regName" placeholder="Full Name"></div>
+        <div class="register-form-group"><label>Phone</label><input type="text" id="regPhone" placeholder="Phone"></div>
+        <div class="register-form-group"><label>Email</label><input type="email" id="regEmail" placeholder="Email"></div>
+        <button id="registerNewBtn" class="register-submit-btn">Register Customer</button>`;
+      document.getElementById("regTabWalkin")?.addEventListener("click", () => { customerActiveTab = "walkin"; selectedCustomer = { id:1, name:"Walk-in Customer" }; renderCustomerSection(); });
+      document.getElementById("regTabExisting")?.addEventListener("click", () => { customerActiveTab = "existing"; renderCustomerSection(); });
+      document.getElementById("registerNewBtn")?.addEventListener("click", () => {
+        let name = document.getElementById("regName")?.value.trim();
+        if(!name) { Swal.fire("Error","Name required","error"); return; }
+        let newId = Date.now();
+        let newCust = { id: newId, name: name, phone: document.getElementById("regPhone")?.value || "", visits:0, total_spent:0 };
+        staticCustomers.push(newCust);
+        selectedCustomer = { id: newId, name: name };
+        customerActiveTab = "walkin";
+        renderCustomerSection();
+        Swal.fire("Success","Customer registered","success");
+      });
+    }
+  }
+  
+  function renderCustomerList() {
+    const listDiv = document.getElementById("customerList");
+    if(!listDiv) return;
+    let filtered = staticCustomers.filter(c => c.id !== 1 && (c.name.toLowerCase().includes(customerSearchQuery.toLowerCase()) || c.phone.includes(customerSearchQuery)));
+    if(filtered.length === 0) { listDiv.innerHTML = "<div class='empty-cart-msg'>No customers found</div>"; return; }
+    listDiv.innerHTML = filtered.map(c => `<div class="customer-item" data-id="${c.id}"><strong>${escapeHtml(c.name)}</strong><br><small>${c.phone || "No phone"} | ${c.visits} visits | ₱${c.total_spent}</small></div>`).join("");
+    document.querySelectorAll(".customer-item").forEach(el => el.addEventListener("click", (e) => {
+      let id = parseInt(el.dataset.id);
+      let found = staticCustomers.find(c => c.id === id);
+      if(found) { selectedCustomer = { id: found.id, name: found.name }; customerActiveTab = "walkin"; renderCustomerSection(); }
+    }));
+  }
+  
+  async function completeSale() {
+    if(cart.length === 0) { Swal.fire("Empty Cart","Add items first","warning"); return; }
+    if(!selectedBarber) { Swal.fire("Barber Required","Please select a barber","error"); return; }
+    const total = cart.reduce((s,i)=> s + (i.price*i.quantity),0);
+    let paymentValid = false, paymentDetail = "";
+    if(selectedPaymentMethod === "cash") {
+      if(cashTendered < total) { Swal.fire("Insufficient Cash",`Tendered: ${formatPHP(cashTendered)} Total: ${formatPHP(total)}`,"error"); return; }
+      paymentDetail = `Cash ${formatPHP(cashTendered)} (Change: ${formatPHP(cashTendered-total)})`;
+      paymentValid = true;
+    } else if(selectedPaymentMethod === "gcash") {
+      if(!referenceNumber.trim()) { Swal.fire("Missing Ref","Enter GCash reference","error"); return; }
+      paymentDetail = `GCash Ref: ${referenceNumber}`;
+      paymentValid = true;
+    } else if(selectedPaymentMethod === "card") {
+      if(!referenceNumber.trim()) { Swal.fire("Missing Auth","Enter card auth code","error"); return; }
+      paymentDetail = `Card Auth: ${referenceNumber}`;
+      paymentValid = true;
+    }
+    if(!paymentValid) return;
+    const confirm = await Swal.fire({ title: "Confirm Sale", html: `<strong>${escapeHtml(selectedCustomer.name)}</strong><br>Total: ${formatPHP(total)}<br>Barber: ${selectedBarber.name}<br>Payment: ${paymentDetail}`, icon: "question", showCancelButton: true, confirmButtonText: "Yes, Complete" });
+    if(!confirm.isConfirmed) return;
+    // simulate receipt
+    const receiptNo = "CC-" + Math.floor(Math.random()*10000);
+    Swal.fire({ icon: "success", title: "Transaction Complete!", html: `Total: ${formatPHP(total)}<br>Receipt: ${receiptNo}`, showConfirmButton: true, confirmButtonText: "Print Receipt" }).then((res) => {
+      if(res.isConfirmed) printReceipt(total, paymentDetail, receiptNo);
+      resetPos();
+    });
+  }
+  
+  function printReceipt(total, paymentDetail, receiptNo) {
+    const receiptHTML = `
+      <div style="text-align:center; font-family: monospace; padding:16px;">
+        <h3>CLASSIC CUTS BARBERSHOP</h3>
+        <p>123 Main St, Downtown<br>Tel: (555) 123-4567</p>
+        <p>${new Date().toLocaleString()}</p>
+        <p>Receipt: ${receiptNo}</p>
+        <p>Customer: ${escapeHtml(selectedCustomer.name)}</p>
+        <p>Barber: ${selectedBarber.name}</p>
+        <hr>
+        ${cart.map(i => `<div>${escapeHtml(i.name)} x${i.quantity} = ${formatPHP(i.price*i.quantity)}</div>`).join('')}
+        <hr>
+        <div><strong>TOTAL: ${formatPHP(total)}</strong></div>
+        <div>Payment: ${paymentDetail}</div>
+        <p>💈 Thank you! Come again 💈</p>
+      </div>`;
+    const win = window.open('', '_blank', 'width=400,height=600');
+    win.document.write(`<html><head><title>Receipt</title></head><body>${receiptHTML}<script>window.print();setTimeout(()=>window.close(),800);<\/script></body></html>`);
+    win.document.close();
+  }
+  
+  function resetPos() {
+    cart = []; selectedBarber = null; cashTendered = 0; referenceNumber = "";
+    selectedCustomer = { id: 1, name: "Walk-in Customer" };
+    customerActiveTab = "walkin";
+    document.querySelectorAll(".barber-btn").forEach(b=>b.classList.remove("active"));
+    updateCartUI();
+    renderCustomerSection();
+    renderPaymentDetails();
+  }
+  
+  document.getElementById("clearCartBtn")?.addEventListener("click", () => { if(cart.length) { Swal.fire({title:"Clear cart?", text:"All items removed", icon:"warning", showCancelButton:true}).then(res=>{ if(res.isConfirmed){ cart=[]; updateCartUI(); } }) } });
+  document.getElementById("checkoutBtn")?.addEventListener("click", completeSale);
+  document.getElementById("staticLogoutBtn")?.addEventListener("click", () => Swal.fire("Logged Out", "Demo mode: page will reload", "info").then(()=> location.reload()));
+  document.getElementById("liveDate").innerHTML = `<i class="far fa-calendar-alt"></i> ${new Date().toLocaleDateString('en-PH', { weekday:'short', year:'numeric', month:'short', day:'numeric' })}`;
+  
+  function init() {
+    renderCategoryTabs();
+    renderProducts();
+    renderBarberButtons();
+    renderPaymentMethods();
+    renderCustomerSection();
+    updateCartUI();
+  }
+  init();
+</script>
+</body>
+</html>
